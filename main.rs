@@ -1,8 +1,11 @@
 use std::io::stdin;
 
 fn main() {
-    let look_ahead: uint = get_number();
-    emit_ln(look_ahead.to_string().as_slice());
+    expression();
+}
+
+fn expression() {
+    emit_ln("MOV RAX, ".to_string() + get_number().to_string())
 }
 
 fn next_char() -> char {
@@ -12,23 +15,23 @@ fn next_char() -> char {
 fn get_number() -> uint {
     match next_char().to_digit(10) {
         Some(n) => n,
-        None    => panic!(expected("Integer"))
+        None    => panic!(expected("Integer".to_string()))
     }
 }
 
-fn error(s: &str) -> String {
+fn error(s: String) -> String {
     format!("Error: {}.", s)
 }
 
-fn expected(s: &str) -> String {
-    error((s.to_string() + " expected".to_string()).as_slice())
+fn expected(s: String) -> String {
+    error(s + " expected".to_string())
 }
 
-fn emit(s: &str) {
+fn emit(s: String) {
     print!("\t{}", s);
 }
 
-fn emit_ln(s: &str) {
-    emit((s.to_string() + "\n".to_string()).as_slice());
+fn emit_ln(s: String) {
+    emit(s + "\n".to_string());
 }
 
