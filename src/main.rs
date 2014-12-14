@@ -18,16 +18,14 @@ fn expression(look_ahead: &mut char) {
 }
 
 fn term(look_ahead: &mut char) {
-    factor();
-    *look_ahead = next_char();
+    factor(look_ahead);
     while vec!('*', '/').contains(look_ahead) {
         emit_ln("PUSH RAX".to_string());
         match *look_ahead {
-            '*' => mul(),
-            '/' => div(),
+            '*' => mul(look_ahead),
+            '/' => div(look_ahead),
             _   => panic!(expected("mulop".to_string()))
         }
-        *look_ahead = next_char();
     }
 }
 
@@ -44,30 +42,39 @@ fn sub(look_ahead: &mut char) {
     emit_ln("NEG RAX".to_string());
 }
 
-fn mul() {
-    factor();
+fn mul(look_ahead: &mut char) {
+    factor(look_ahead);
     emit_ln("POP RCX".to_string());
     emit_ln("IMUL RCX".to_string());
 }
 
-fn div() {
-    factor();
+fn div(look_ahead: &mut char) {
+    factor(look_ahead);
     emit_ln("MOV RCX, RAX".to_string());
     emit_ln("POP RAX".to_string());
     emit_ln("XOR RDX, RDX".to_string());
     emit_ln("IDIV RCX".to_string());
 }
 
-fn factor() {
-    emit_ln("MOV RAX, ".to_string() + get_number().to_string())
+fn factor(look_ahead: &mut char) {
+    *look_ahead = next_char();
+    if *look_ahead == '(' {
+        expression(look_ahead);
+        if *look_ahead != ')' {
+            panic!(expected("delimiter: )".to_string()));
+        }
+    } else {
+        emit_ln("MOV RAX, ".to_string() + get_number(look_ahead).to_string());
+    }
+    *look_ahead = next_char();
 }
 
 fn next_char() -> char {
     stdin().read_char().unwrap()
 }
 
-fn get_number() -> uint {
-    match next_char().to_digit(10) {
+fn get_number(look_ahead: &char) -> uint {
+    match look_ahead.to_digit(10) {
         Some(n) => n,
         None    => panic!(expected("Integer".to_string()))
     }
