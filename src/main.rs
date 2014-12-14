@@ -58,15 +58,21 @@ fn div(look_ahead: &mut char) {
 
 fn factor(look_ahead: &mut char) {
     *look_ahead = next_char();
-    if *look_ahead == '(' {
-        expression(look_ahead);
-        if *look_ahead != ')' {
-            panic!(expected("delimiter: )".to_string()));
+
+    match *look_ahead {
+        '(' => {
+            expression(look_ahead);
+            if *look_ahead != ')' {
+                panic!(expected("delimiter: )".to_string()));
+            }
+            *look_ahead = next_char();
+        },
+        '+'|'-' => emit_ln("XOR RAX, RAX".to_string()),
+        _       => {
+            emit_ln("MOV RAX, ".to_string() + get_number(look_ahead).to_string());
+            *look_ahead = next_char();
         }
-    } else {
-        emit_ln("MOV RAX, ".to_string() + get_number(look_ahead).to_string());
     }
-    *look_ahead = next_char();
 }
 
 fn next_char() -> char {
