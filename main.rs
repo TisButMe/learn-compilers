@@ -5,6 +5,31 @@ fn main() {
 }
 
 fn expression() {
+    term();
+    let mut c = next_char();
+    while vec!('+', '-').contains(&c) {
+        emit_ln("MOV RDX, RAX".to_string());
+        match c {
+            '+' => add(),
+            '-' => sub(),
+            _   => panic!(expected("addop".to_string()))
+        }
+        c = next_char();
+    }
+}
+
+fn add() {
+    term();
+    emit_ln("ADD RAX, RDX".to_string());
+}
+
+fn sub() {
+    term();
+    emit_ln("SUB RAX, RDX".to_string());
+    emit_ln("NEG RAX".to_string());
+}
+
+fn term() {
     emit_ln("MOV RAX, ".to_string() + get_number().to_string())
 }
 
