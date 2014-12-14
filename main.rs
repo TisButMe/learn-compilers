@@ -8,7 +8,7 @@ fn expression() {
     term();
     let mut c = next_char();
     while vec!('+', '-').contains(&c) {
-        emit_ln("MOV RDX, RAX".to_string());
+        emit_ln("PUSH RAX".to_string());
         match c {
             '+' => add(),
             '-' => sub(),
@@ -20,12 +20,14 @@ fn expression() {
 
 fn add() {
     term();
-    emit_ln("ADD RAX, RDX".to_string());
+    emit_ln("POP RCX".to_string());
+    emit_ln("ADD RAX, RCX".to_string());
 }
 
 fn sub() {
     term();
-    emit_ln("SUB RAX, RDX".to_string());
+    emit_ln("POP RCX".to_string());
+    emit_ln("SUB RAX, RCX".to_string());
     emit_ln("NEG RAX".to_string());
 }
 
