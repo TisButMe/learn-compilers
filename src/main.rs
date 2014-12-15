@@ -101,7 +101,11 @@ fn factor(look_ahead: &mut char) {
 }
 
 fn next_char() -> char {
-  stdin().read_char().unwrap()
+  let mut next = stdin().read_char().unwrap();
+  while next == ' ' {
+    next = stdin().read_char().unwrap();
+  }
+  next
 }
 
 fn get_number(look_ahead: &mut char) -> uint {
