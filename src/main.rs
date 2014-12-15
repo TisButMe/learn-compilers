@@ -2,7 +2,13 @@ use std::io::stdin;
 
 fn main() {
   let mut look_ahead = ' ';
+  emit_ln("section .text".to_string());
+  emit_ln("global _start".to_string());
+  emit_ln("_start:".to_string());
   expression(&mut look_ahead);
+  emit_ln("MOV RAX, 60".to_string());
+  emit_ln("XOR RDI, RDI".to_string());
+  emit_ln("SYSCALL".to_string());
 }
 
 fn expression(look_ahead: &mut char) {
