@@ -2,12 +2,15 @@ use std::io::stdin;
 
 fn main() {
   let mut look_ahead = ' ';
+
   emit_ln("section .text");
   emit_ln("global _start");
   emit_ln("_start:");
   emit_ln(";; start of code gen");
-  expression(&mut look_ahead);
+
+  assignment(&mut look_ahead);
   if look_ahead != '\n' {panic!(expected("Newline as the end of the input"));}
+
   emit_ln("\n\t;; end of code gen\n\tMOV RAX, 60");
   emit_ln("XOR RDI, RDI");
   emit_ln("SYSCALL");
@@ -23,6 +26,17 @@ fn expression(look_ahead: &mut char) {
       _   => panic!(expected("addop"))
     }
   }
+}
+
+fn assignment(look_ahead: &mut char) {
+  *look_ahead = next_char();
+  let name = get_name(look_ahead);
+
+  if next_char() != '=' {panic!(expected("="));}
+  expression(look_ahead);
+
+  let instr = "MOV ".to_string() + name + ", RAX".to_string();
+  emit_ln(instr.as_slice());
 }
 
 fn term(look_ahead: &mut char) {
