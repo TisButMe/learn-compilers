@@ -69,8 +69,12 @@ fn factor(look_ahead: &mut char) {
 
       *look_ahead = next_char();
     },
-    '+'|'-' => emit_ln("XOR RAX, RAX".to_string()),
-    _     => {
+    '+'|'-'                => emit_ln("XOR RAX, RAX".to_string()),
+    x if x.is_alphabetic() => {
+      emit_ln("MOV RAX, ".to_string() + get_name(look_ahead));
+      *look_ahead = next_char();
+    },
+    _                      => {
       emit_ln("MOV RAX, ".to_string() + get_number(look_ahead).to_string());
       *look_ahead = next_char();
     }
@@ -86,6 +90,10 @@ fn get_number(look_ahead: &char) -> uint {
     Some(n) => n,
     None    => panic!(expected("Integer".to_string()))
   }
+}
+
+fn get_name(look_ahead: &mut char) -> String {
+  look_ahead.to_string()
 }
 
 fn error(s: String) -> String {
