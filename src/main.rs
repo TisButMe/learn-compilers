@@ -7,6 +7,7 @@ fn main() {
   emit_ln("_start:".to_string());
   emit_ln(";; start of code gen".to_string());
   expression(&mut look_ahead);
+  if look_ahead != '\n' {panic!(expected("Newline as the end of the input".to_string()));}
   emit_ln("\n\t;; end of code gen\n\tMOV RAX, 60".to_string());
   emit_ln("XOR RDI, RDI".to_string());
   emit_ln("SYSCALL".to_string());
