@@ -32,7 +32,7 @@ fn assignment(look_ahead: &mut char) {
   *look_ahead = next_char();
   let name = get_name(look_ahead);
 
-  if next_char() != '=' {panic!(expected("="));}
+  if *look_ahead != '=' {panic!(expected("="));}
   expression(look_ahead);
 
   let instr = "MOV ".to_string() + name + ", RAX".to_string();
@@ -96,7 +96,6 @@ fn factor(look_ahead: &mut char) {
     _                      => {
       let instr = "MOV RAX, ".to_string() + get_number(look_ahead).to_string();
       emit_ln(instr.as_slice());
-      *look_ahead = next_char();
     }
   }
 }
@@ -105,20 +104,29 @@ fn next_char() -> char {
   stdin().read_char().unwrap()
 }
 
-fn get_number(look_ahead: &char) -> uint {
-  match look_ahead.to_digit(10) {
-    Some(n) => n,
-    None    => panic!(expected("Integer"))
+fn get_number(look_ahead: &mut char) -> uint {
+  let mut nb = 0;
+  if !look_ahead.is_digit(10) {panic!(expected("integer"));}
+
+  while look_ahead.is_digit(10) {
+    nb = 10*nb + look_ahead.to_digit(10).unwrap();
+    *look_ahead = next_char();
   }
+  nb
 }
 
 fn get_name(look_ahead: &mut char) -> String {
-  look_ahead.to_string()
+  let mut name = look_ahead.to_string();
+  *look_ahead = next_char();
+  while (*look_ahead).is_alphanumeric() {
+    name = name + look_ahead.to_string();
+    *look_ahead = next_char();
+  }
+  name
 }
 
 fn ident(look_ahead: &mut char) {
   let name = get_name(look_ahead);
-  *look_ahead = next_char();
   match *look_ahead {
     '(' => {
       if next_char() != ')' { panic!(expected("end of function parameters delimiter: )")); }
