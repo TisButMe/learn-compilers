@@ -1,8 +1,12 @@
 use std::io::stdin;
 
 fn main() {
-    let look_ahead: uint = get_number();
-    emit_ln(look_ahead.to_string().as_slice());
+    let look_ahead: uint = ' ';
+    expression(&mut look_ahead);
+}
+
+fn expression(look_ahead: &mut char) {
+    *look_ahead = 
 }
 
 fn next_char() -> char {
