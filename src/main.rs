@@ -2,10 +2,11 @@ use std::io::stdin;
 
 fn main() {
     let mut look_ahead = next_char();
-    expression(&mut look_ahead);
+    let val = expression(&mut look_ahead);
+    emit_ln(val.to_string().as_slice());
 }
 
-fn expression(look_ahead: &mut char) {
+fn expression(look_ahead: &mut char) -> int {
     let mut val = if is_addop(look_ahead) {
         0
     } else {
@@ -25,28 +26,40 @@ fn expression(look_ahead: &mut char) {
             _ => panic!(expected("addop"))
         }
     }
-    emit_ln(val.to_string().as_slice());
+    val
 }
 
 fn term(look_ahead: &mut char) -> int {
-    let mut val = get_number(look_ahead);
+    let mut val = factor(look_ahead);
     
     *look_ahead = next_char();
     while is_mulop(look_ahead) {
         match *look_ahead {
             '*' => {
                 *look_ahead = next_char();
-                val *= get_number(look_ahead);
+                val *= factor(look_ahead);
             }
             '/' => {
                 *look_ahead = next_char();
-                val /= get_number(look_ahead);
+                val /= factor(look_ahead);
             }
             _ => panic!(expected("mulop"))
         }
         *look_ahead = next_char();
     }
     val
+}
+
+fn factor(look_ahead: &mut char) -> int {
+    match *look_ahead {
+        '(' => {
+            *look_ahead = next_char();
+            let val = expression(look_ahead);
+            if *look_ahead != ')' {panic!(expected(")"));}
+            val
+        }
+        _ => get_number(look_ahead)
+    }
 }
 
 fn is_addop(c: &char) -> bool {
