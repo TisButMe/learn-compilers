@@ -49,7 +49,6 @@ fn expression(look_ahead: &mut char) -> int {
 fn term(look_ahead: &mut char) -> int {
     let mut val = factor(look_ahead);
     
-    *look_ahead = next_char();
     while is_mulop(look_ahead) {
         match *look_ahead {
             '*' => {
@@ -62,7 +61,6 @@ fn term(look_ahead: &mut char) -> int {
             }
             _ => panic!(expected("mulop"))
         }
-        *look_ahead = next_char();
     }
     val
 }
@@ -73,17 +71,18 @@ fn factor(look_ahead: &mut char) -> int {
             *look_ahead = next_char();
             let val = expression(look_ahead);
             if *look_ahead != ')' {panic!(expected(")"));}
-            val
+          *look_ahead = next_char();
+          val
         }
         _ => get_number(look_ahead)
     }
 }
 
-fn is_addop(c: &char) -> bool {
-    ['+', '-'].contains(c)
-}
+ fn is_addop(c: &char) -> bool {
+     ['+', '-'].contains(c)
+ }
 
-fn is_mulop(c: &char) -> bool {
+ fn is_mulop(c: &char) -> bool {
     ['*', '/'].contains(c)
 }
 
@@ -91,11 +90,16 @@ fn next_char() -> char {
     stdin().read_char().unwrap()
 }
 
-fn get_number(look_ahead: &char) -> int {
-    match look_ahead.to_digit(10) {
-        Some(n) => n.to_int().unwrap(),
-        None    => panic!(expected("Integer"))
+fn get_number(look_ahead: &mut char) -> int {
+    if !look_ahead.is_digit(10) {panic!("Digit expected, found {}", look_ahead);}
+    let mut val = 0;
+
+    while look_ahead.is_digit(10) {
+        val = val*10 + look_ahead.to_digit(10).unwrap();
+        *look_ahead = next_char();
     }
+
+    val.to_int().unwrap()
 }
 
 fn error(s: &str) -> String {
