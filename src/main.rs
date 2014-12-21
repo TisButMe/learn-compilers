@@ -1,9 +1,26 @@
 use std::io::stdin;
 
 fn main() {
+    print!("> ");
     let mut look_ahead = next_char();
-    let val = expression(&mut look_ahead);
-    emit_ln(val.to_string().as_slice());
+    
+    loop {
+        if look_ahead == '.' {
+            let op = next_char();
+            match op {
+                'q' => break,
+                _ => {
+                    emit_ln(format!("Unknown operation: {}", op).as_slice());
+                    look_ahead = next_char();
+                }
+            }
+        } else {
+            let val = expression(&mut look_ahead);
+            emit_ln(val.to_string().as_slice());
+        }
+        print!("> ");
+        look_ahead = next_char();
+    }
 }
 
 fn expression(look_ahead: &mut char) -> int {
