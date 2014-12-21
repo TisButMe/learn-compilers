@@ -9,29 +9,52 @@ fn expression(look_ahead: &mut char) {
     let mut val = if is_addop(look_ahead) {
         0
     } else {
-        get_number(look_ahead)
+        term(look_ahead)
     };
 
-    *look_ahead = next_char();
     while is_addop(look_ahead) {
         match *look_ahead {
             '+' => {
                 *look_ahead = next_char();
-                val += get_number(look_ahead);
+                val += term(look_ahead);
             }
             '-' => {
                 *look_ahead = next_char();
-                val -= get_number(look_ahead);
+                val -= term(look_ahead);
             }
             _ => panic!(expected("addop"))
         }
-        *look_ahead = next_char();
     }
     emit_ln(val.to_string().as_slice());
 }
 
+fn term(look_ahead: &mut char) -> int {
+    let mut val = get_number(look_ahead);
+    
+    *look_ahead = next_char();
+    while is_mulop(look_ahead) {
+        match *look_ahead {
+            '*' => {
+                *look_ahead = next_char();
+                val *= get_number(look_ahead);
+            }
+            '/' => {
+                *look_ahead = next_char();
+                val /= get_number(look_ahead);
+            }
+            _ => panic!(expected("mulop"))
+        }
+        *look_ahead = next_char();
+    }
+    val
+}
+
 fn is_addop(c: &char) -> bool {
     ['+', '-'].contains(c)
+}
+
+fn is_mulop(c: &char) -> bool {
+    ['*', '/'].contains(c)
 }
 
 fn next_char() -> char {
