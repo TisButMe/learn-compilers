@@ -6,12 +6,12 @@ fn main() {
     
     loop {
         if look_ahead == '.' {
-            let op = next_char();
-            match op {
-                'q' => break,
+            look_ahead = next_char();
+            let op = get_name(&mut look_ahead);
+            match op.as_slice() {
+                "quit" => break,
                 _ => {
                     emit_ln(format!("Unknown operation: {}", op).as_slice());
-                    look_ahead = next_char();
                 }
             }
         } else {
@@ -87,7 +87,13 @@ fn factor(look_ahead: &mut char) -> int {
 }
 
 fn next_char() -> char {
-    stdin().read_char().unwrap()
+    let mut c = stdin().read_char().unwrap();
+
+    while c == ' ' {
+       c = stdin().read_char().unwrap();
+    }
+
+    c
 }
 
 fn get_number(look_ahead: &mut char) -> int {
@@ -100,6 +106,18 @@ fn get_number(look_ahead: &mut char) -> int {
     }
 
     val.to_int().unwrap()
+}
+
+fn get_name(look_ahead: &mut char) -> String {
+    if !look_ahead.is_alphabetic() {panic!("Identifiers must start with a letter")}
+    let mut id = String::new();
+    
+    while look_ahead.is_alphanumeric() {
+        id = id + look_ahead.to_string();
+        *look_ahead = next_char();
+    }
+
+    id
 }
 
 fn error(s: &str) -> String {
